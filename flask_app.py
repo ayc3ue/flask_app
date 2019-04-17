@@ -1,6 +1,10 @@
 import os
 from flask import Flask, flash, request, redirect, url_for, send_from_directory, render_template
 from werkzeug.utils import secure_filename
+import exiftool
+import json
+
+
 
 app = Flask(__name__)
 UPLOAD_FOLDER = './uploads'
@@ -37,7 +41,9 @@ def uploaded_file(filename):
 
     #exif
 
-
+    with exiftool.ExifTool() as et:
+        metadata = json.dumps(et.get_metadata_batch([file]))
+    print(metadata)
     os.remove(file)
-    return render_template('./result.html')
+    return render_template('./result.html', metadata= metadata)
     #send_from_directory(app.config['UPLOAD_FOLDER'], filename)
